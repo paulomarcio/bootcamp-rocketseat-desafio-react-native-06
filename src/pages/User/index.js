@@ -54,13 +54,14 @@ export default class User extends Component {
       },
     });
     const { link } = response.headers;
-    const { page } = this.parseHeaderLink(link);
+    const { page } = link ? this.parseHeaderLink(link) : 1;
+    const nextPage = link ? 2 : 1;
 
     await this.setState({
       stars: response.data,
       user,
       loading: false,
-      nextPage: 2,
+      nextPage,
       pageCount: page,
     });
 
