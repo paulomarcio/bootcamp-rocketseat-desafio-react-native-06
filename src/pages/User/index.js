@@ -64,14 +64,15 @@ export default class User extends Component {
 
   loadMore = async () => {
     const { nextPage, pageCount, per_page, user, stars } = this.state;
-    const response = await api.get(`/users/${user.login}/starred`, {
-      params: {
-        page: nextPage,
-        per_page,
-      },
-    });
 
     if (nextPage <= pageCount) {
+      const response = await api.get(`/users/${user.login}/starred`, {
+        params: {
+          page: nextPage,
+          per_page,
+        },
+      });
+
       await this.setState({
         nextPage: nextPage + 1,
         stars: [...stars, ...response.data],
