@@ -36,15 +36,20 @@ export default class User extends Component {
     nextPage: 1,
     pageCount: 1,
     per_page: 5,
+    refreshing: false,
   };
 
   async componentDidMount() {
+    this.loadIssues();
+  }
+
+  loadIssues = async () => {
     const { navigation, route } = this.props;
-    const { nextPage, per_page } = this.state;
+    const { per_page } = this.state;
     const { user } = route.params;
     const response = await api.get(`/users/${user.login}/starred`, {
       params: {
-        page: nextPage,
+        page: 1,
         per_page,
       },
     });
@@ -55,12 +60,12 @@ export default class User extends Component {
       stars: response.data,
       user,
       loading: false,
-      nextPage: nextPage + 1,
+      nextPage: 2,
       pageCount: page,
     });
 
     navigation.setOptions({ title: user.name });
-  }
+  };
 
   loadMore = async () => {
     const { nextPage, pageCount, per_page, user, stars } = this.state;
@@ -102,7 +107,7 @@ export default class User extends Component {
   };
 
   render() {
-    const { stars, user, loading } = this.state;
+    const { stars, user, loading, refreshing } = this.state;
     return (
       <Container>
         <Header>
@@ -118,6 +123,8 @@ export default class User extends Component {
             data={stars}
             onEndReachedThreshold={0.2}
             onEndReached={this.loadMore}
+            onRefresh={this.loadIssues}
+            refreshing={refreshing}
             keyExtractor={star => String(star.id)}
             renderItem={({ item }) => (
               <Starred>
